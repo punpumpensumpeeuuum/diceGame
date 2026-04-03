@@ -136,3 +136,5 @@ rollbutton.addEventListener('click', () => {
 	});
 });
 document.body.appendChild(rollbutton);
+
+// adicionar maneira de o display esperar por eles os dois
