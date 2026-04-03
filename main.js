@@ -62,23 +62,39 @@ let rolling = false;
 function animate() {
 	requestAnimationFrame(animate);
 	if (rolling) {
-		dice.rotation.x += 0.11;
-		dice.rotation.y += 0.11;
+		dice.rotation.x += 0.3;
+		dice.rotation.y += 0.3;
 	}
 	renderer.render(scene, camera);
 }
 animate();
+
+const faceRotations = {
+	1: { x: 0, y: -Math.PI / 2, },
+	2: { x: 0, y: Math.PI / 2, },
+	3: { x: Math.PI / 2, y: 0, },
+	4: { x: -Math.PI / 2, y: 0, },
+	5: { x: 0, y: 0, },
+	6: { x: 0, y: Math.PI, },
+};
+
+const randomNumber = () => {
+	return Math.floor(Math.random() * 6) + 1;
+}
 
 const button = document.createElement('button');
 button.innerText = 'Roll';
 button.addEventListener('click', () => {
 	rolling = true;
 	button.style.display = 'none';
+	const result = randomNumber();
+	const target = faceRotations[result];
 	setTimeout(() => {
 		rolling = false;
+		dice.rotation.x = target.x;
+		dice.rotation.y = target.y;
 		button.style.display = 'block';
-	}, 1000);
+		console.log(result);
+	}, 500);
 });
 document.body.appendChild(button);
-
-// fazer uma maneira de detetar qual o lado que est]a mais virado para a camera
