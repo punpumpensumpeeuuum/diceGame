@@ -122,19 +122,15 @@ const rollbutton = document.createElement('rollbutton');
 rollbutton.innerText = 'Roll';
 rollbutton.addEventListener('click', () => {
 	rollbutton.style.display = 'none';
-	let results = 0;
-	let single = 0;
+	let results = [];
 	diceList.forEach(d => {
-		d.roll((single) => {
-			results += single;
-			
-			if (results >= diceList.length) {
-				displayNumber(results);
+		d.roll((result) => {
+			results.push(result);
+			if (results.length === diceList.length) {
+				displayNumber(results.reduce((a, b) => a + b, 0));
 				rollbutton.style.display = 'flex';
 			}
 		})
 	});
 });
 document.body.appendChild(rollbutton);
-
-// adicionar maneira de o display esperar por eles os dois
