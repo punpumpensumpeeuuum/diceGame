@@ -91,19 +91,19 @@ const randomNumber = () => {
 	return Math.floor(Math.random() * 6) + 1;
 }
 
-const button = document.createElement('button');
-button.innerText = 'Roll';
-button.addEventListener('click', () => {
+const rollbutton = document.createElement('rollbutton');
+rollbutton.innerText = 'Roll';
+rollbutton.addEventListener('click', () => {
 	rolling = true;
-	button.style.display = 'none';
+	rollbutton.style.display = 'none';
 	const result = randomNumber();
 	const target = faceRotations[result];
 	setTimeout(() => {
 		rolling = false;
 		dice.rotation.x = target.x;
 		dice.rotation.y = target.y;
-		button.style.display = 'block';
+		rollbutton.style.display = 'block';
 		displayNumber(result);
 	}, 500);
 });
-document.body.appendChild(button);
+document.body.appendChild(rollbutton);
