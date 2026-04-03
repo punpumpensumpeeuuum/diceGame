@@ -169,3 +169,7 @@ document.body.appendChild(rollbutton);
 
 const deckbutton = document.createElement('deckbutton');
 deckbutton.innerText = 'Deck';
+
+// fazer um deck
+// descobrir como fazer as cartas serem random
+// probs fazer tipo 10 cartas de cada tipo idk
