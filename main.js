@@ -15,6 +15,15 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+const faceRotations = {
+	1: { x: 0, y: -Math.PI / 2, },
+	2: { x: 0, y: Math.PI / 2, },
+	3: { x: Math.PI / 2, y: 0, },
+	4: { x: -Math.PI / 2, y: 0, },
+	5: { x: 0, y: 0, },
+	6: { x: 0, y: Math.PI, },
+};
+
 function createDiceFaceTexture(number) {
 	const canvas = document.createElement('canvas');
 	const size = 256;
@@ -52,58 +61,78 @@ const textures = [
 	new THREE.MeshBasicMaterial({ map: createDiceFaceTexture(6) }),
 ];
 
-const geometry = new THREE.BoxGeometry();
-// const material = new THREE.MeshBasicMaterial({ color: 0x0000ff});
-const dice = new THREE.Mesh(geometry, textures);
-scene.add(dice);
+class Dice {
+	constructor(x = 0, y = 0, z = 0) {
+		this.result = null;
+		this.rolly = null;
+		this.rolling = false;
+
+		const geometry = new THREE.BoxGeometry();
+		const materials = [1,2,3,4,5,6].map(n => 
+			new THREE.MeshBasicMaterial({ map: createDiceFaceTexture(n) })
+		);
+		this.mesh = new THREE.Mesh(geometry, materials);
+		this.mesh.position.set(x,y,z);
+		scene.add(this.mesh);
+	}
+
+	roll(onDone) {
+		this.rolling = true;
+		this.result = Math.floor(Math.random() * 6) + 1;
+		this.rolly = ((Math.floor(Math.random() * 6) + 1) * 100) + ((Math.floor(Math.random() * 6) + 1) * 100);
+		const target = faceRotations[this.result];
+		setTimeout(() => {
+			this.rolling = false;
+			this.mesh.rotation.x = target.x;
+			this.mesh.rotation.y = target.y;
+			if (onDone) onDone(this.result);
+		}, this.rolly);
+	}
+
+	update() {
+		if (this.rolling) {
+			this.mesh.rotation.x += 0.3;
+			this.mesh.rotation.y += 0.3;
+		}
+	}
+}
+
+const diceList = [
+	new Dice(1, 0, 0),
+	new Dice(-1, 0, 0),
+];
 
 const res = document.createElement('numb');
 res.innerText = '';
-
-let rolling = false;
+document.body.appendChild(res);
 
 function displayNumber(number) {
 	res.innerText = number;
-	document.body.appendChild(res);
 	console.log(number);
 }
 
 function animate() {
 	requestAnimationFrame(animate);
-	if (rolling) {
-		dice.rotation.x += 0.3;
-		dice.rotation.y += 0.3;
-	}
+	diceList.forEach(d => d.update());
 	renderer.render(scene, camera);
 }
 animate();
 
-const faceRotations = {
-	1: { x: 0, y: -Math.PI / 2, },
-	2: { x: 0, y: Math.PI / 2, },
-	3: { x: Math.PI / 2, y: 0, },
-	4: { x: -Math.PI / 2, y: 0, },
-	5: { x: 0, y: 0, },
-	6: { x: 0, y: Math.PI, },
-};
-
-const randomNumber = () => {
-	return Math.floor(Math.random() * 6) + 1;
-}
-
 const rollbutton = document.createElement('rollbutton');
 rollbutton.innerText = 'Roll';
 rollbutton.addEventListener('click', () => {
-	rolling = true;
 	rollbutton.style.display = 'none';
-	const result = randomNumber();
-	const target = faceRotations[result];
-	setTimeout(() => {
-		rolling = false;
-		dice.rotation.x = target.x;
-		dice.rotation.y = target.y;
-		rollbutton.style.display = 'block';
-		displayNumber(result);
-	}, 500);
+	let results = 0;
+	let single = 0;
+	diceList.forEach(d => {
+		d.roll((single) => {
+			results += single;
+			
+			if (results >= diceList.length) {
+				displayNumber(results);
+				rollbutton.style.display = 'flex';
+			}
+		})
+	});
 });
 document.body.appendChild(rollbutton);

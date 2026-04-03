@@ -7,13 +7,14 @@ canvas {
 	display: block;
 	width: 100vw;
 	height: 100vh;
+	z-index: 1;
 }
 
 rollbutton {
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -30%);
+	transform: translate(-50%, -70%);
 	height: 100vh;
 	width: 100vh;
 	color: white;
@@ -26,16 +27,20 @@ rollbutton {
 	text-align: center;
 	padding: 0;
 	border: none;
-	z-index: 2147483647;
+	z-index: 2;
 }
 
 numb {
 	position: fixed;
-	top: -50%;
+	top: 0%;
 	left: 0%;
 	color: red;
-	font-size: 180vw;
+	font-size: 100vw;
 	opacity: 0.3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
 	user-select: none;
 	z-index: 0;
 }
