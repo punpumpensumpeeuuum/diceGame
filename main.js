@@ -57,7 +57,16 @@ const geometry = new THREE.BoxGeometry();
 const dice = new THREE.Mesh(geometry, textures);
 scene.add(dice);
 
+const res = document.createElement('numb');
+res.innerText = '';
+
 let rolling = false;
+
+function displayNumber(number) {
+	res.innerText = number;
+	document.body.appendChild(res);
+	console.log(number);
+}
 
 function animate() {
 	requestAnimationFrame(animate);
@@ -94,7 +103,7 @@ button.addEventListener('click', () => {
 		dice.rotation.x = target.x;
 		dice.rotation.y = target.y;
 		button.style.display = 'block';
-		console.log(result);
+		displayNumber(result);
 	}, 500);
 });
 document.body.appendChild(button);
