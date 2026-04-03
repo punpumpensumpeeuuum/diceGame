@@ -8,7 +8,7 @@ const camera = new THREE.PerspectiveCamera(
 	0.1,
 	1000
 );
-camera.position.z = 5;
+camera.position.z = 15;
 
 const renderer = new THREE.WebGLRenderer({
 	canvas: document.getElementById('game-canvas')
@@ -52,6 +52,12 @@ function createDiceFaceTexture(number) {
 	return new THREE.CanvasTexture(canvas);
 }
 
+const textureLoader = new THREE.TextureLoader();
+
+function setDiceFaceTexture(number) {
+	return textureLoader.load(`textures/${number}.png`);
+}
+
 const textures = [
 	new THREE.MeshBasicMaterial({ map: createDiceFaceTexture(1) }),
 	new THREE.MeshBasicMaterial({ map: createDiceFaceTexture(2) }),
@@ -69,7 +75,7 @@ class Dice {
 
 		const geometry = new THREE.BoxGeometry();
 		const materials = [1,2,3,4,5,6].map(n => 
-			new THREE.MeshBasicMaterial({ map: createDiceFaceTexture(n) })
+			new THREE.MeshBasicMaterial({ map: setDiceFaceTexture(n) })
 		);
 		this.mesh = new THREE.Mesh(geometry, materials);
 		this.mesh.position.set(x,y,z);
@@ -98,8 +104,11 @@ class Dice {
 }
 
 const diceList = [
-	new Dice(1, 0, 0),
-	new Dice(-1, 0, 0),
+	new Dice(4, -3, 0),
+	new Dice(2, -3, 0),
+	new Dice(0, -3, 0),
+	new Dice(-2, -3, 0),
+	new Dice(-4, -3, 0),
 ];
 
 const res = document.createElement('numb');
