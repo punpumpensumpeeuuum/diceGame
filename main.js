@@ -120,6 +120,29 @@ function displayNumber(number) {
 	console.log(number);
 }
 
+class Card {
+	constructor(x = 0, y = 0, z = 0) {
+		this.mana = null;
+		this.cost = null;
+		this.damage = null;
+		this.target = null;
+
+		const geometry = new THREE.PlaneGeometry(3, 4.5);
+		const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubeSide });
+		this.mesh = new THREE.Mesh(geometry, material);
+		this.mesh.position.set(x,y,z);
+		scene.add(this.mesh);
+	}
+}
+
+const handSize = 5;
+const spacing = 4;
+const hand = Array.from({ length: handSize }, (_, i) => {
+	const x = (i - (handSize - 1) / 2) * spacing;
+	return new Card(x, -8, 0);
+});
+
+
 function animate() {
 	requestAnimationFrame(animate);
 	diceList.forEach(d => d.update());
@@ -143,3 +166,6 @@ rollbutton.addEventListener('click', () => {
 	});
 });
 document.body.appendChild(rollbutton);
+
+const deckbutton = document.createElement('deckbutton');
+deckbutton.innerText = 'Deck';
