@@ -72,6 +72,7 @@ class Dice {
 		this.result = null;
 		this.rolly = null;
 		this.rolling = false;
+		this.locked = false;
 
 		const geometry = new THREE.BoxGeometry();
 		const materials = [1,2,3,4,5,6].map(n => 
@@ -83,6 +84,10 @@ class Dice {
 	}
 
 	roll(onDone) {
+		if (this.locked) {
+			if (onDone) onDone(this.result);
+			return ;
+		}
 		this.rolling = true;
 		this.result = Math.floor(Math.random() * 6) + 1;
 		this.rolly = ((Math.floor(Math.random() * 6) + 1) * 100) + ((Math.floor(Math.random() * 6) + 1) * 100);
@@ -101,6 +106,14 @@ class Dice {
 			this.mesh.rotation.y += 0.3;
 		}
 	}
+
+	onClick() {
+		this.locked = !this.locked;
+		console.log(this.locked);
+		this.mesh.material.forEach(m => {
+			m.color.set(this.locked ? 0x888888 : 0xffffff);
+		});
+	}
 }
 
 const diceList = [
@@ -111,15 +124,6 @@ const diceList = [
 	new Dice(-4, -3, 0),
 ];
 
-const res = document.createElement('numb');
-res.innerText = '';
-document.body.appendChild(res);
-
-function displayNumber(number) {
-	res.innerText = number;
-	console.log(number);
-}
-
 class Card {
 	constructor(x = 0, y = 0, z = 0) {
 		this.mana = null;
@@ -128,7 +132,7 @@ class Card {
 		this.target = null;
 
 		const geometry = new THREE.PlaneGeometry(3, 4.5);
-		const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubeSide });
+		const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: 2 });
 		this.mesh = new THREE.Mesh(geometry, material);
 		this.mesh.position.set(x,y,z);
 		scene.add(this.mesh);
@@ -150,6 +154,15 @@ function animate() {
 }
 animate();
 
+// const res = document.createElement('numb');
+// res.innerText = '';
+// document.body.appendChild(res);
+
+// function displayNumber(number) {
+// 	res.innerText = number;
+// 	console.log(number);
+// }
+
 const rollbutton = document.createElement('rollbutton');
 rollbutton.innerText = 'Roll';
 rollbutton.addEventListener('click', () => {
@@ -159,7 +172,7 @@ rollbutton.addEventListener('click', () => {
 		d.roll((result) => {
 			results.push(result);
 			if (results.length === diceList.length) {
-				displayNumber(results.reduce((a, b) => a + b, 0));
+				// displayNumber(results.reduce((a, b) => a + b, 0));
 				rollbutton.style.display = 'flex';
 			}
 		})
@@ -169,6 +182,27 @@ document.body.appendChild(rollbutton);
 
 const deckbutton = document.createElement('deckbutton');
 deckbutton.innerText = 'Deck';
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+window.addEventListener('click', (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  diceList.forEach(d => {
+    const hits = raycaster.intersectObject(d.mesh);
+    if (hits.length > 0) {
+      d.onClick();
+    }
+  });
+});
+
+// falta adicionar n de turnos
+// n de rolls
+// botao para skippar turnos
 
 // fazer um deck
 // descobrir como fazer as cartas serem random

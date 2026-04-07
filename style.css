@@ -12,11 +12,11 @@ canvas {
 
 rollbutton {
 	position: fixed;
-	top: 50%;
+	top: 30%;
 	left: 50%;
 	transform: translate(-50%, -70%);
-	height: 100vh;
-	width: 100vh;
+	height: 300;
+	width: 300;
 	color: white;
 	font-size: 10vh;
 	opacity: 0.3;
