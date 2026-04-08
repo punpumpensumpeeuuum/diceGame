@@ -15,6 +15,31 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+class Game {
+	constructor() {
+		this.turn = 1;
+	}
+
+	nextturn() {
+		this.turn++;
+		console.log(`turn > ${this.turn}`);
+		resetrolls();
+	}
+}
+
+const game = new Game();
+
+function resetrolls() {
+	diceList.forEach(d => {
+		d.numrolls = 2;
+		d.locked = false;
+		d.mesh.material.forEach(m => m.color.set(0xffffff));
+		d.randomizeFace();
+	});
+	updateRollDisplay();
+	rollbutton.style.display = 'flex';
+}
+
 const faceRotations = {
 	1: { x: 0, y: -Math.PI / 2, },
 	2: { x: 0, y: Math.PI / 2, },
@@ -73,6 +98,7 @@ class Dice {
 		this.rolly = null;
 		this.rolling = false;
 		this.locked = false;
+		this.numrolls = 2;
 
 		const geometry = new THREE.BoxGeometry();
 		const materials = [1,2,3,4,5,6].map(n => 
@@ -81,13 +107,15 @@ class Dice {
 		this.mesh = new THREE.Mesh(geometry, materials);
 		this.mesh.position.set(x,y,z);
 		scene.add(this.mesh);
+		this.randomizeFace();
 	}
 
 	roll(onDone) {
-		if (this.locked) {
+		if (this.locked || this.numrolls === 0) {
 			if (onDone) onDone(this.result);
 			return ;
 		}
+		this.numrolls--;
 		this.rolling = true;
 		this.result = Math.floor(Math.random() * 6) + 1;
 		this.rolly = ((Math.floor(Math.random() * 6) + 1) * 100) + ((Math.floor(Math.random() * 6) + 1) * 100);
@@ -109,10 +137,17 @@ class Dice {
 
 	onClick() {
 		this.locked = !this.locked;
-		console.log(this.locked);
 		this.mesh.material.forEach(m => {
 			m.color.set(this.locked ? 0x888888 : 0xffffff);
 		});
+	}
+
+	randomizeFace() {
+		const result = Math.floor(Math.random() * 6) + 1;
+		const target = faceRotations[result];
+		this.result = result;
+		this.mesh.rotation.x = target.x;
+		this.mesh.rotation.y = target.y;
 	}
 }
 
@@ -154,55 +189,75 @@ function animate() {
 }
 animate();
 
-// const res = document.createElement('numb');
-// res.innerText = '';
-// document.body.appendChild(res);
+const ttt = document.createElement('Turn');
+ttt.innerText = `Turn: ${game.turn}`;
+document.body.appendChild(ttt);
 
-// function displayNumber(number) {
-// 	res.innerText = number;
-// 	console.log(number);
-// }
+function displaynum(number) {
+	ttt.innerText = `Turn: ${number}`;
+}
+
+function updateRollDisplay() {
+	const rolls = diceList[0].numrolls;
+	if (rolls === 0) {
+		rollbutton.style.display = 'none';
+		return ;
+	}
+	rollbutton.innerText = `${rolls} Roll`;
+	rollbutton.style.display = 'flex';
+}
 
 const rollbutton = document.createElement('rollbutton');
-rollbutton.innerText = 'Roll';
 rollbutton.addEventListener('click', () => {
+	const roooll = diceList.some(d => !d.locked && d.numrolls > 0);
+	if (!roooll) {
+		return ;
+	}	
 	rollbutton.style.display = 'none';
 	let results = [];
 	diceList.forEach(d => {
 		d.roll((result) => {
 			results.push(result);
 			if (results.length === diceList.length) {
-				// displayNumber(results.reduce((a, b) => a + b, 0));
-				rollbutton.style.display = 'flex';
+				updateRollDisplay();
 			}
 		})
 	});
 });
 document.body.appendChild(rollbutton);
+updateRollDisplay();
+
+const nextturnbutton = document.createElement('nextturnbutton');
+nextturnbutton.innerText = 'Next turn';
+nextturnbutton.addEventListener('click', () => {
+	game.nextturn();
+	updateRollDisplay();
+	displaynum(game.turn);
+});
+document.body.appendChild(nextturnbutton);
 
 const deckbutton = document.createElement('deckbutton');
 deckbutton.innerText = 'Deck';
+
+
+
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 window.addEventListener('click', (event) => {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  raycaster.setFromCamera(mouse, camera);
+	raycaster.setFromCamera(mouse, camera);
 
-  diceList.forEach(d => {
-    const hits = raycaster.intersectObject(d.mesh);
-    if (hits.length > 0) {
-      d.onClick();
-    }
-  });
+	diceList.forEach(d => {
+		const hits = raycaster.intersectObject(d.mesh);
+		if (hits.length > 0) {
+			d.onClick();
+		}
+	});
 });
-
-// falta adicionar n de turnos
-// n de rolls
-// botao para skippar turnos
 
 // fazer um deck
 // descobrir como fazer as cartas serem random

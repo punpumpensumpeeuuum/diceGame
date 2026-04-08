@@ -20,7 +20,6 @@ rollbutton {
 	color: white;
 	font-size: 10vh;
 	opacity: 0.3;
-	/* background-color: red; */
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -30,17 +29,31 @@ rollbutton {
 	z-index: 2;
 }
 
-numb {
+Turn {
 	position: fixed;
-	top: 0%;
-	left: 0%;
-	color: red;
-	font-size: 100vw;
-	opacity: 0.3;
+	top: 80%;
+	left: 75%;
+	color: brown;
+	font-size: 60px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	text-align: center;
 	user-select: none;
 	z-index: 0;
+}
+
+nextturnbutton {
+	position: fixed;
+	top: 50%;
+	left: 70%;
+	color: white;
+	background-color: brown;
+	font-size: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	user-select: none;
+	z-index: 3;
 }
