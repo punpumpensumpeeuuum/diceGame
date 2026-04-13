@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Dice } from './dice.js';
 import { Deck } from './deck.js';
+import { AllCards } from './deck.js';
 
 const scene = new THREE.Scene();
 
@@ -44,6 +45,12 @@ const spacing = 4;
 const hand = Array.from({ length: handSize }, (_, i) => {
 	const x = (i - (handSize - 1) / 2) * spacing;
 	return new Deck(scene, x, -8, 0);
+});
+
+hand.forEach(card => {
+	const randomc = AllCards[Math.floor(Math.random() * AllCards.length)];
+	console.log("ohx or andom" , randomc);
+	card.assignvals(randomc);	
 });
 
 function resetrolls() {
