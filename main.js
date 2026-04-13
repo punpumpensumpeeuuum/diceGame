@@ -95,6 +95,10 @@ let endturn = false;
 nextturnbutton.addEventListener('click', () => {
 	if (!endturn) return ;
 	game.nextturn();
+	hand.forEach(card => {
+		const randomc = AllCards[Math.floor(Math.random() * AllCards.length)];
+		card.assignvals(randomc);
+	});
 	updateRollDisplay();
 	displaynum(game.turn);
 	endturn = false;

@@ -1,16 +1,21 @@
 import * as THREE from 'three';
 import { BlueCards } from './cards/bluecards.js';
-// import { GreenCards } from './cards/greencards.js';
-// import { OrangeCards } from './cards/orangecard.js';
-// import { PurpleCards } from './cards/purplecards.js';
-// import { RedCards } from './cards/redcards.js';
-// import { YellowCards } from './cards/yellowcards.js';
+import { GreenCards } from './cards/greencards.js';
+import { OrangeCards } from './cards/orangecard.js';
+import { PurpleCards } from './cards/purplecards.js';
+import { RedCards } from './cards/redcards.js';
+import { YellowCards } from './cards/yellowcards.js';
 // import { PairCards } from './cards/paircards.js';
 // import { TripletCards } from './cards/triplecards.js';
 // import { QuadrupletCards } from './cards/quadrupletcards.js';
 
 export const AllCards = [
 	...BlueCards,
+	...GreenCards,
+	...OrangeCards,
+	...PurpleCards,
+	...RedCards,
+	...YellowCards,
 ];
 
 export class Deck {
@@ -47,13 +52,13 @@ function createCardTexture(data) {
 	const ctx = canvas.getContext('2d');
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0, 0, 256, 384);
-
-	// fazer uma funcao pa ver se o tipo de mana for x a cor ]e x se foir y ]e y you feel me?
 	ctx.fillStyle = data.color;
 	ctx.font = '24px Arial';
 	ctx.fillText(data.name, 20, 40);
 	ctx.fillText(`Cost: ${data.cost}`, 20, 80);
 	ctx.fillText(`Damage: ${data.damage}`, 20, 120);
-
 	return new THREE.CanvasTexture(canvas);
 }
+
+// fazer a textura do dado transparente
+// o custo ]e o numeor de vezes q aparece 
