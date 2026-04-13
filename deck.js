@@ -48,6 +48,7 @@ function createCardTexture(data) {
 	const ctx = canvas.getContext('2d');
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0, 0, 256, 384);
+	
 	// fazer uma funcao pa ver se o tipo de mana for x a cor ]e x se foir y ]e y you feel me?
 	ctx.fillStyle = 'black';
 	ctx.font = '24px Arial';
