@@ -49,7 +49,6 @@ const hand = Array.from({ length: handSize }, (_, i) => {
 
 hand.forEach(card => {
 	const randomc = AllCards[Math.floor(Math.random() * AllCards.length)];
-	console.log("ohx or andom" , randomc);
 	card.assignvals(randomc);	
 });
 

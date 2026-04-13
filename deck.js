@@ -17,10 +17,10 @@ export class Deck {
 	constructor(scene, x = 0, y = 0, z = 0) {
 		this.scene = scene;
 		this.name = null;
-		this.mana = null;
 		this.cost = null;
 		this.damage = null;
 		this.target = null;
+		this.color = null;
 
 		const geometry = new THREE.PlaneGeometry(3, 4.5);
 		const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: 2 });
@@ -30,9 +30,8 @@ export class Deck {
 	}
 
 	assignvals(thecard) {
-		console.log("aaaaaaaom" , thecard.name);
 		this.name = thecard.name;
-		this.mana = thecard.mana;
+		this.color = thecard.color;
 		this.cost = thecard.cost;
 		this.damage = thecard.damage;
 		const texture = createCardTexture(this);
@@ -48,9 +47,9 @@ function createCardTexture(data) {
 	const ctx = canvas.getContext('2d');
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0, 0, 256, 384);
-	
+
 	// fazer uma funcao pa ver se o tipo de mana for x a cor ]e x se foir y ]e y you feel me?
-	ctx.fillStyle = 'black';
+	ctx.fillStyle = data.color;
 	ctx.font = '24px Arial';
 	ctx.fillText(data.name, 20, 40);
 	ctx.fillText(`Cost: ${data.cost}`, 20, 80);
