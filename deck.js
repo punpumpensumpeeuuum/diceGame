@@ -28,7 +28,7 @@ export class Deck {
 		this.color = null;
 
 		const geometry = new THREE.PlaneGeometry(3, 4.5);
-		const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: 2 });
+		const material = new THREE.MeshBasicMaterial({ color: 0xffffdd, side: 2 });
 		this.mesh = new THREE.Mesh(geometry, material);
 		this.mesh.position.set(x,y,z);
 		scene.add(this.mesh);
@@ -50,15 +50,59 @@ function createCardTexture(data) {
 	canvas.width = 256;
 	canvas.height = 384;
 	const ctx = canvas.getContext('2d');
-	ctx.fillStyle = 'white';
-	ctx.fillRect(0, 0, 256, 384);
+	const layout = {
+		title: 50,
+		costHeight: 90,
+		textTop: 344
+	};
+	ctx.fillStyle = "white";
+	ctx.fillRect(0,0,256,384);
 	ctx.fillStyle = data.color;
-	ctx.font = '24px Arial';
-	ctx.fillText(data.name, 20, 40);
-	ctx.fillText(`Cost: ${data.cost}`, 20, 80);
-	ctx.fillText(`Damage: ${data.damage}`, 20, 120);
-	return new THREE.CanvasTexture(canvas);
+	ctx.font = "bold 36px Arial";
+	ctx.textAlign = "center";
+	ctx.fillText(data.name, 128, layout.title);
+	const texture = new THREE.CanvasTexture(canvas);
+	const img = new Image();
+	img.src = `textures/noback/${data.color}.png`;
+	img.onload = () => {
+		const size = 120;
+		drawCost(ctx, data.cost, layout.costHeight, img);
+		texture.needsUpdate = true;
+	};
+	ctx.textAlign = "left";
+	ctx.fillText(`Damage: ${data.damage}`, 20, layout.textTop);
+	return texture;
 }
 
-// fazer a textura do dado transparente
-// o custo ]e o numeor de vezes q aparece 
+function drawCost(ctx, cost, y, img) {
+
+	const size = 150 - (cost * 5);
+	const spacing = -50;
+	let	firstRow = 0;
+	let secondRow = 0;
+	if (cost <= 3)
+		firstRow = cost;
+	else if (cost === 4) {
+		firstRow = 2;
+		secondRow = 2;
+	}
+	else if (cost === 5) {
+		firstRow = 3;
+		secondRow = 2;
+	}
+
+	function drawRow(count, y) {
+		const totalWidth = count * size + (count - 1) * spacing;
+		const startX = (256 - totalWidth) / 2;
+
+		for (let i = 0; i < count; i++) {
+			const x = startX + i * (size + spacing);
+			ctx.drawImage(img, x, y, size, size);
+		}
+	}
+
+	drawRow(firstRow, y);
+
+	if (secondRow > 0)
+		drawRow(secondRow, y + size - 45);
+}
