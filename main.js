@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { Dice } from './dice.js';
 import { Deck } from './deck.js';
 import { AllCards } from './deck.js';
+import { Player } from './player.js';
+
+const player = new Player();
 
 const scene = new THREE.Scene();
 
@@ -31,6 +34,15 @@ class Game {
 }
 
 const game = new Game();
+
+const typeOMana = {
+	'blue': 1,
+	'green': 2,
+	'orange': 3,
+	'purple': 4,
+	'red': 5,
+	'yellow': 6,
+};
 
 const diceList = [
 	new Dice(scene, 4, -3, 0),
@@ -67,6 +79,7 @@ function resetrolls() {
 function animate() {
 	requestAnimationFrame(animate);
 	diceList.forEach(d => d.update());
+	hand.forEach(c => c.update(player.castSpell(typeOMana[c.color], c.cost)));
 	renderer.render(scene, camera);
 }
 animate();
@@ -109,13 +122,15 @@ const rollbutton = document.createElement('rollbutton');
 rollbutton.addEventListener('click', () => {
 	if (diceList[0].numrolls === 0) {
 		return ;
-	}	
+	}
+	player.resetMana();
 	rollbutton.style.display = 'none';
 	endturn = false;
 	let results = [];
 	diceList.forEach(d => {
 		d.roll((result) => {
 			results.push(result);
+			player.mana[result] += 1;
 			if (results.length === diceList.length) {
 				updateRollDisplay();
 				endturn = true;
@@ -135,10 +150,20 @@ deckbutton.innerText = 'Deck';
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+window.addEventListener('mousemove', (event) => {
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	raycaster.setFromCamera(mouse, camera);
+
+	hand.forEach(c => {
+		const hits = raycaster.intersectObject(c.mesh);
+		c.hovered = hits.length > 0;
+	});
+});
+
 window.addEventListener('click', (event) => {
 	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
 	raycaster.setFromCamera(mouse, camera);
 
 	diceList.forEach(d => {
@@ -147,6 +172,12 @@ window.addEventListener('click', (event) => {
 			d.onClick();
 		}
 	});
+	// hand.forEach(c => {
+	// 	const hits = raycaster.intersectObject(c.mesh);
+	// 	if (hits.length > 0) {
+	// 		c.onClick();
+	// 	}
+	// });
 });
 
 // fazer um deck

@@ -106,6 +106,7 @@ export class Dice {
 
 	randomizeFace() {
 		this.rolling = true;
+		this.update();
 		this.result = Math.floor(Math.random() * 6) + 1;
 		this.rolly = ((Math.floor(Math.random() * 6) + 1) * 100) + ((Math.floor(Math.random() * 6) + 1) * 100);
 		const target = faceRotations[this.result];

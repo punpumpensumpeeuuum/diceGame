@@ -26,6 +26,10 @@ export class Deck {
 		this.damage = null;
 		this.target = null;
 		this.color = null;
+		this.hovered = false;
+		this.originalX = x;
+		this.originalY = y;
+		this.shakeTime = 0;
 
 		const geometry = new THREE.PlaneGeometry(3, 4.5);
 		const material = new THREE.MeshBasicMaterial({ color: 0xffffdd, side: 2 });
@@ -42,6 +46,21 @@ export class Deck {
 		const texture = createCardTexture(this);
 		this.mesh.material.map = texture;
 		this.mesh.material.needsUpdate = true;
+	}
+
+	update(cancan) {
+		if (!cancan) {
+			this.mesh.material.color.set(cancan ? 0x888888 : 0xffffdd);
+			return ;
+		}
+		if (this.hovered) {
+			this.shakeTime += 0.6;
+			this.mesh.position.x = this.originalX + Math.sin(this.shakeTime) * 0.03;
+			this.mesh.position.y = this.originalY + Math.cos(this.shakeTime * 1.3) * 0.03;
+		} else {
+			this.mesh.position.x = this.originalX;
+			this.mesh.position.y = this.originalY;
+		}
 	}
 }
 
