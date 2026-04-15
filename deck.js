@@ -30,6 +30,7 @@ export class Deck {
 		this.originalX = x;
 		this.originalY = y;
 		this.shakeTime = 0;
+		this.playable = false;
 
 		const geometry = new THREE.PlaneGeometry(3, 4.5);
 		const material = new THREE.MeshBasicMaterial({ color: 0xffffdd, side: 2 });
@@ -48,12 +49,8 @@ export class Deck {
 		this.mesh.material.needsUpdate = true;
 	}
 
-	update(cancan) {
-		if (!cancan) {
-			this.mesh.material.color.set(cancan ? 0x888888 : 0xffffdd);
-			return ;
-		}
-		if (this.hovered) {
+	update() {
+		if (this.hovered && this.playable) {
 			this.shakeTime += 0.6;
 			this.mesh.position.x = this.originalX + Math.sin(this.shakeTime) * 0.03;
 			this.mesh.position.y = this.originalY + Math.cos(this.shakeTime * 1.3) * 0.03;
@@ -62,11 +59,16 @@ export class Deck {
 			this.mesh.position.y = this.originalY;
 		}
 	}
+
+	setToPlay(cancan) {
+		this.playable = cancan;
+		this.mesh.material.color.set(cancan ? 0xffffdd : 0x888888);
+	}
 }
 
 function createCardTexture(data) {
 	const canvas = document.createElement('canvas');
-	canvas.width = 256;
+	canvas.width = 256; 
 	canvas.height = 384;
 	const ctx = canvas.getContext('2d');
 	const layout = {

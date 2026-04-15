@@ -35,13 +35,13 @@ class Game {
 
 const game = new Game();
 
-const typeOMana = {
-	'blue': 1,
-	'green': 2,
-	'orange': 3,
-	'purple': 4,
-	'red': 5,
-	'yellow': 6,
+const manaFromDice = {
+	1: "blue",
+	2: "green",
+	3: "darkorange",
+	4: "purple",
+	5: "red",
+	6: "gold"
 };
 
 const diceList = [
@@ -63,23 +63,30 @@ hand.forEach(card => {
 	const randomc = AllCards[Math.floor(Math.random() * AllCards.length)];
 	card.assignvals(randomc);	
 });
+diceList.forEach(d => {
+	player.addMana(manaFromDice[d.result]);
+});
+updateCardDisplay();
 
 function resetrolls() {
+	player.resetMana();
 	diceList.forEach(d => {
 		d.numrolls = 2;
 		d.locked = false;
 		d.mesh.material.forEach(m => m.color.set(0xffffff));
 		d.randomizeFace();
+		player.addMana(manaFromDice[d.result]);
 	});
 	endturn = false;
 	updateRollDisplay();
+	updateCardDisplay();
 	rollbutton.style.display = 'flex';
 }
 
 function animate() {
 	requestAnimationFrame(animate);
 	diceList.forEach(d => d.update());
-	hand.forEach(c => c.update(player.castSpell(typeOMana[c.color], c.cost)));
+	hand.forEach(c => c.update());
 	renderer.render(scene, camera);
 }
 animate();
@@ -90,6 +97,13 @@ document.body.appendChild(ttt);
 
 function displaynum(number) {
 	ttt.innerText = `Turn: ${number}`;
+}
+
+function updateCardDisplay() {
+	hand.forEach(c => {
+		const cancan = player.canCastSpell(c.color, c.cost);
+		c.setToPlay(cancan);
+	});
 }
 
 function updateRollDisplay() {
@@ -106,13 +120,13 @@ const nextturnbutton = document.createElement('nextturnbutton');
 nextturnbutton.innerText = 'Next turn';
 let endturn = false;
 nextturnbutton.addEventListener('click', () => {
-	if (!endturn) return ;
 	game.nextturn();
 	hand.forEach(card => {
 		const randomc = AllCards[Math.floor(Math.random() * AllCards.length)];
 		card.assignvals(randomc);
 	});
 	updateRollDisplay();
+	updateCardDisplay();
 	displaynum(game.turn);
 	endturn = false;
 });
@@ -130,9 +144,11 @@ rollbutton.addEventListener('click', () => {
 	diceList.forEach(d => {
 		d.roll((result) => {
 			results.push(result);
-			player.mana[result] += 1;
+			player.addMana(manaFromDice[result]);
 			if (results.length === diceList.length) {
 				updateRollDisplay();
+				updateCardDisplay();
+				player.printMana();
 				endturn = true;
 			}
 		})

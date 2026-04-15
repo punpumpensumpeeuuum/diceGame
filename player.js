@@ -6,21 +6,30 @@ export class Player {
 		this.mana = {
 			blue: 0,
 			green: 0,
-			orange: 0,
+			darkorange: 0,
 			purple: 0,
 			red: 0,
-			yellow: 0,
+			gold: 0,
 		};
 	}
 
 	resetMana() {
-		for (let i = 0; i <= 5; i++)
-			this.mana[i] = 0;
+		for (const color in this.mana)
+			this.mana[color] = 0;
 	}
 
-	castSpell(color, amount) {
+	addMana(color) {
+		if (!this.mana[color]) this.mana[color] = 0;
+		this.mana[color] += 1;
+	}
+
+	canCastSpell(color, amount) {
 		if (this.mana[color] >= amount)
 			return true;
 		return false;
+	}
+
+	printMana() {
+		console.log(this.mana);
 	}
 }
