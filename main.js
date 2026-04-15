@@ -122,6 +122,7 @@ const nextturnbutton = document.createElement('nextturnbutton');
 nextturnbutton.innerText = 'Next turn';
 let endturn = false;
 nextturnbutton.addEventListener('click', () => {
+	if (diceList.some(d => d.rolling)) return;
 	game.nextturn();
 	hand.forEach(card => {
 		card.randomCard();
