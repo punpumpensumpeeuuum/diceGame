@@ -198,7 +198,7 @@ window.addEventListener('click', (event) => {
 	});
 });
 
-// fix quando spamo o nextturn os dados rodam bue e piscam-se todos
+// https://www.youtube.com/watch?v=gEZcJ3GufmE
 
 // fazer um deck
 // descobrir como fazer as cartas serem random
