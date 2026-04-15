@@ -18,7 +18,7 @@ export const AllCards = [
 	...YellowCards,
 ];
 
-export class Deck {
+export class Card {
 	constructor(scene, x = 0, y = 0, z = 0) {
 		this.scene = scene;
 		this.name = null;
@@ -39,7 +39,8 @@ export class Deck {
 		scene.add(this.mesh);
 	}
 
-	assignvals(thecard) {
+	randomCard() {
+		const thecard = AllCards[Math.floor(Math.random() * AllCards.length)];
 		this.name = thecard.name;
 		this.color = thecard.color;
 		this.cost = thecard.cost;
@@ -47,10 +48,15 @@ export class Deck {
 		const texture = createCardTexture(this);
 		this.mesh.material.map = texture;
 		this.mesh.material.needsUpdate = true;
+		this.mesh.visible = true;
 	}
 
 	update() {
-		if (this.hovered && this.playable) {
+		if (this.shakeTime > 0) {
+			this.mesh.position.x =
+			this.originalX + Math.sin(this.shakeTime * 2) * 0.15;
+			this.shakeTime--;
+		} else if (this.hovered && this.playable) {
 			this.shakeTime += 0.6;
 			this.mesh.position.x = this.originalX + Math.sin(this.shakeTime) * 0.03;
 			this.mesh.position.y = this.originalY + Math.cos(this.shakeTime * 1.3) * 0.03;
@@ -63,6 +69,14 @@ export class Deck {
 	setToPlay(cancan) {
 		this.playable = cancan;
 		this.mesh.material.color.set(cancan ? 0xffffdd : 0x888888);
+	}
+
+	castPlay() {
+		if (!this.playable) {
+			this.shakeTime = 20;
+			return;
+		}
+		this.mesh.visible = false;
 	}
 }
 
@@ -123,7 +137,6 @@ function drawCost(ctx, cost, y, img) {
 	}
 
 	drawRow(firstRow, y);
-
 	if (secondRow > 0)
 		drawRow(secondRow, y + size - 45);
 }

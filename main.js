@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Dice } from './dice.js';
-import { Deck } from './deck.js';
-import { AllCards } from './deck.js';
+import { Card } from './card.js';
+import { AllCards } from './card.js';
 import { Player } from './player.js';
 
 const player = new Player();
@@ -29,7 +29,7 @@ class Game {
 	nextturn() {
 		this.turn++;
 		console.log(`turn > ${this.turn}`);
-		resetrolls();
+		resetGame();
 	}
 }
 
@@ -56,19 +56,18 @@ const handSize = 5;
 const spacing = 4;
 const hand = Array.from({ length: handSize }, (_, i) => {
 	const x = (i - (handSize - 1) / 2) * spacing;
-	return new Deck(scene, x, -8, 0);
+	return new Card(scene, x, -8, 0);
 });
 
 hand.forEach(card => {
-	const randomc = AllCards[Math.floor(Math.random() * AllCards.length)];
-	card.assignvals(randomc);	
+	card.randomCard();
 });
 diceList.forEach(d => {
 	player.addMana(manaFromDice[d.result]);
 });
 updateCardDisplay();
 
-function resetrolls() {
+function resetGame() {
 	player.resetMana();
 	diceList.forEach(d => {
 		d.numrolls = 2;
@@ -76,6 +75,9 @@ function resetrolls() {
 		d.mesh.material.forEach(m => m.color.set(0xffffff));
 		d.randomizeFace();
 		player.addMana(manaFromDice[d.result]);
+	});
+	hand.forEach(card => {
+		card.randomCard();
 	});
 	endturn = false;
 	updateRollDisplay();
@@ -122,8 +124,7 @@ let endturn = false;
 nextturnbutton.addEventListener('click', () => {
 	game.nextturn();
 	hand.forEach(card => {
-		const randomc = AllCards[Math.floor(Math.random() * AllCards.length)];
-		card.assignvals(randomc);
+		card.randomCard();
 	});
 	updateRollDisplay();
 	updateCardDisplay();
@@ -188,13 +189,15 @@ window.addEventListener('click', (event) => {
 			d.onClick();
 		}
 	});
-	// hand.forEach(c => {
-	// 	const hits = raycaster.intersectObject(c.mesh);
-	// 	if (hits.length > 0) {
-	// 		c.onClick();
-	// 	}
-	// });
+	hand.forEach(c => {
+		const hits = raycaster.intersectObject(c.mesh);
+		if (hits.length > 0) {
+			c.castPlay();
+		}
+	});
 });
+
+// fix quando spamo o nextturn os dados rodam bue e piscam-se todos
 
 // fazer um deck
 // descobrir como fazer as cartas serem random
