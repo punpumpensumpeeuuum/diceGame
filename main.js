@@ -176,6 +176,14 @@ window.addEventListener('mousemove', (event) => {
 	hand.forEach(c => {
 		const hits = raycaster.intersectObject(c.mesh);
 		c.hovered = hits.length > 0;
+		if (dragging) {
+			const vec = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+			vec.unproject(camera);
+			const dir = vec.sub(camera.position).normalize();
+			const dist = -camera.position.z / dir.z;
+			const pos = camera.position.clone().add(dir.multiplyScalar(dist));
+			
+		}
 	});
 });
 
@@ -193,10 +201,10 @@ window.addEventListener('click', (event) => {
 	hand.forEach(c => {
 		const hits = raycaster.intersectObject(c.mesh);
 		if (hits.length > 0) {
-			c.castPlay();
+			c.dragging = true;
 		}
 	});
-});
+});	
 
 // https://www.youtube.com/watch?v=gEZcJ3GufmE
 

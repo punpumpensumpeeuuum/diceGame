@@ -31,6 +31,7 @@ export class Card {
 		this.originalY = y;
 		this.shakeTime = 0;
 		this.playable = false;
+		this.dragging = false;
 
 		const geometry = new THREE.PlaneGeometry(3, 4.5);
 		const material = new THREE.MeshBasicMaterial({ color: 0xffffdd, side: 2 });

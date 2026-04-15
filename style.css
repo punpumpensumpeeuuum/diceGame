@@ -20,7 +20,6 @@ rollbutton {
 	color: white;
 	background-color: brown;
 	font-size: 10vh;
-	opacity: 0.3;
 	display: flex;
 	align-items: center;
 	justify-content: center;
