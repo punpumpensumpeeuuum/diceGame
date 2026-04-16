@@ -1,10 +1,7 @@
 import * as THREE from 'three';
 import { Dice } from './dice.js';
 import { Card } from './card.js';
-import { AllCards } from './card.js';
 import { Player } from './player.js';
-
-const player = new Player();
 
 const scene = new THREE.Scene();
 
@@ -20,6 +17,8 @@ const renderer = new THREE.WebGLRenderer({
 	canvas: document.getElementById('game-canvas')
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+const player = new Player(scene);
 
 class Game {
 	constructor() {
@@ -105,6 +104,7 @@ function updateCardDisplay() {
 	hand.forEach(c => {
 		const cancan = player.canCastSpell(c.color, c.cost);
 		c.setToPlay(cancan);
+		c.mesh.position.set(c.originalX, c.originalY, 0);
 	});
 }
 
@@ -168,25 +168,6 @@ deckbutton.innerText = 'Deck';
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-window.addEventListener('mousemove', (event) => {
-	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-	raycaster.setFromCamera(mouse, camera);
-
-	hand.forEach(c => {
-		const hits = raycaster.intersectObject(c.mesh);
-		c.hovered = hits.length > 0;
-		if (dragging) {
-			const vec = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-			vec.unproject(camera);
-			const dir = vec.sub(camera.position).normalize();
-			const dist = -camera.position.z / dir.z;
-			const pos = camera.position.clone().add(dir.multiplyScalar(dist));
-			
-		}
-	});
-});
-
 window.addEventListener('click', (event) => {
 	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -198,15 +179,65 @@ window.addEventListener('click', (event) => {
 			d.onClick();
 		}
 	});
+});
+
+window.addEventListener('mousedown', (event) => {
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	raycaster.setFromCamera(mouse, camera);
+
 	hand.forEach(c => {
 		const hits = raycaster.intersectObject(c.mesh);
-		if (hits.length > 0) {
+		if (hits.length > 0 && player.canCastSpell(c.color, c.cost)) {
 			c.dragging = true;
+			Object.values(player.dropZonesGraphic).forEach(m => m.visible = true);
+			rollbutton.style.display = 'none';
+			nextturnbutton.style.display = 'none';
 		}
 	});
-});	
+});
 
-// https://www.youtube.com/watch?v=gEZcJ3GufmE
+window.addEventListener('mousemove', (event) => {
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	raycaster.setFromCamera(mouse, camera);
+
+	const vec = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+	vec.unproject(camera);
+	const dir = vec.sub(camera.position).normalize();
+	const dist = -camera.position.z / dir.z;
+	const pos = camera.position.clone().add(dir.multiplyScalar(dist));
+
+	hand.forEach(c => {
+		const hits = raycaster.intersectObject(c.mesh);
+		c.hovered = hits.length > 0;
+		if (c.dragging) {
+			c.mesh.position.x = pos.x;
+			c.mesh.position.y = pos.y;
+			// player.playingCard(c);
+		}
+	});
+});
+
+window.addEventListener('mouseup', (event) => {
+	Object.values(player.dropZonesGraphic).forEach(m => m.visible = false);
+	hand.forEach(c => {
+		if (!c.dragging) return;
+		c.dragging = false;
+		const zone = player.dropCard(c.mesh.position.x, c.mesh.position.y);
+		console.log(zone);
+		if (zone && c.playable) {
+			Object.values(player.dropZonesGraphic).forEach(m => m.visible = false);
+			c.castPlay();
+			updateCardDisplay();
+		} else {
+			c.mesh.position.x = c.originalX;
+			c.mesh.position.y = c.originalY;
+		}
+		if (diceList[0].numrolls !== 0) rollbutton.style.display = 'flex';
+		nextturnbutton.style.display = 'flex';
+	});
+});
 
 // fazer um deck
 // descobrir como fazer as cartas serem random

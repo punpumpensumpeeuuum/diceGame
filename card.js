@@ -57,14 +57,15 @@ export class Card {
 			this.mesh.position.x =
 			this.originalX + Math.sin(this.shakeTime * 2) * 0.15;
 			this.shakeTime--;
-		} else if (this.hovered && this.playable) {
-			this.shakeTime += 0.6;
-			this.mesh.position.x = this.originalX + Math.sin(this.shakeTime) * 0.03;
-			this.mesh.position.y = this.originalY + Math.cos(this.shakeTime * 1.3) * 0.2;
-		} else {
-			this.mesh.position.x = this.originalX;
-			this.mesh.position.y = this.originalY;
-		}
+		} 
+		// else if (this.hovered && this.playable) {
+		// 	this.shakeTime += 0.6;
+		// 	this.mesh.position.x = this.originalX + Math.sin(this.shakeTime) * 0.03;
+		// 	this.mesh.position.y = this.originalY + Math.cos(this.shakeTime * 1.3) * 0.2;
+		// } else {
+		// 	this.mesh.position.x = this.originalX;
+		// 	this.mesh.position.y = this.originalY;
+		// }
 	}
 
 	setToPlay(cancan) {
