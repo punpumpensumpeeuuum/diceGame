@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import { Card } from './card.js';
-
 
 export class Player {
 	constructor(scene) {
@@ -83,8 +81,6 @@ export class Player {
 	// }
 
 	dropCard(x, y) {
-				console.log(x,y);
-
 		for (const zone of Object.values(this.dropzones)) {
 			if (x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY) {
 				return zone.label;

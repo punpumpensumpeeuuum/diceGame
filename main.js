@@ -51,7 +51,7 @@ const diceList = [
 	new Dice(scene, -4, -3, 0),
 ];
 
-const handSize = 5;
+const handSize = 6;
 const spacing = 4;
 const hand = Array.from({ length: handSize }, (_, i) => {
 	const x = (i - (handSize - 1) / 2) * spacing;
@@ -179,6 +179,12 @@ window.addEventListener('click', (event) => {
 			d.onClick();
 		}
 	});
+	hand.forEach(c => {
+		const hits = raycaster.intersectObject(c.mesh);
+		if (hits.length > 0) {
+			c.castPlay();
+		}
+	});
 });
 
 window.addEventListener('mousedown', (event) => {
@@ -204,9 +210,14 @@ window.addEventListener('mousemove', (event) => {
 
 	const vec = new THREE.Vector3(mouse.x, mouse.y, 0.5);
 	vec.unproject(camera);
-	const dir = vec.sub(camera.position).normalize();
+	const dir = vec.clone().sub(camera.position).normalize();
 	const dist = -camera.position.z / dir.z;
 	const pos = camera.position.clone().add(dir.multiplyScalar(dist));
+
+	const hoveringzone = player.dropCard(pos.x, pos.y);
+	Object.entries(player.dropZonesGraphic).forEach(([zon, mesh]) => {
+		mesh.material.color.set(zon === hoveringzone ? 0x00ff00 : 0xffffff);
+	});
 
 	hand.forEach(c => {
 		const hits = raycaster.intersectObject(c.mesh);

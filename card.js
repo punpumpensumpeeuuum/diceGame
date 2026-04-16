@@ -54,8 +54,7 @@ export class Card {
 
 	update() {
 		if (this.shakeTime > 0) {
-			this.mesh.position.x =
-			this.originalX + Math.sin(this.shakeTime * 2) * 0.15;
+			this.mesh.position.x = this.originalX + Math.sin(this.shakeTime * 2) * 0.15;
 			this.shakeTime--;
 		} 
 		// else if (this.hovered && this.playable) {
