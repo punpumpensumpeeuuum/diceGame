@@ -196,7 +196,7 @@ window.addEventListener('mousedown', (event) => {
 		const hits = raycaster.intersectObject(c.mesh);
 		if (hits.length > 0 && player.canCastSpell(c.color, c.cost)) {
 			c.dragging = true;
-			Object.values(player.dropZonesGraphic).forEach(m => m.visible = true);
+			// Object.values(player.dropZonesGraphic).forEach(m => m.visible = true);
 			rollbutton.style.display = 'none';
 			nextturnbutton.style.display = 'none';
 		}
@@ -214,9 +214,10 @@ window.addEventListener('mousemove', (event) => {
 	const dist = -camera.position.z / dir.z;
 	const pos = camera.position.clone().add(dir.multiplyScalar(dist));
 
+	const isdrag = hand.some(c => c.dragging);
 	const hoveringzone = player.dropCard(pos.x, pos.y);
 	Object.entries(player.dropZonesGraphic).forEach(([zon, mesh]) => {
-		mesh.material.color.set(zon === hoveringzone ? 0x00ff00 : 0xffffff);
+		mesh.visible = isdrag && zon === hoveringzone;
 	});
 
 	hand.forEach(c => {

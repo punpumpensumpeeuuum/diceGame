@@ -3,6 +3,6 @@ function windDamage(min, max) {
 }
 // needs fixing
 export const GreenCards = [
-	{ id: 1, name: 'Gust', cost: 1, damage: windDamage(2,4), color: 'green'}
+	{ id: 1, name: 'Gust', cost: 1, damage: () => windDamage(2,4), color: 'green'}
 	
 ]
