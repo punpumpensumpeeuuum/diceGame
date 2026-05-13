@@ -1,13 +1,13 @@
 import * as THREE from 'three';
-import { BlueCards } from './scrs/cards/bluecards.js';
-import { GreenCards } from './scrs/cards/greencards.js';
-import { OrangeCards } from './scrs/cards/orangecard.js';
-import { PurpleCards } from './scrs/cards/purplecards.js';
-import { RedCards } from './scrs/cards/redcards.js';
-import { YellowCards } from './scrs/cards/yellowcards.js';
-// import { PairCards } from './cards/paircards.js';
-// import { TripletCards } from './cards/triplecards.js';
-// import { QuadrupletCards } from './cards/quadrupletcards.js';
+import { BlueCards } from './../cards/bluecards.js';
+import { GreenCards } from './../cards/greencards.js';
+import { OrangeCards } from './../cards/orangecard.js';
+import { PurpleCards } from './../cards/purplecards.js';
+import { RedCards } from './../cards/redcards.js';
+import { YellowCards } from './../cards/yellowcards.js';
+// import { PairCards } from './../cards/paircards.js';
+// import { TripletCards } from './../cards/triplecards.js';
+// import { QuadrupletCards } from './../cards/quadrupletcards.js';
 
 export const AllCards = [
 	...BlueCards,
@@ -57,14 +57,6 @@ export class Card {
 			this.mesh.position.x = this.originalX + Math.sin(this.shakeTime * 2) * 0.15;
 			this.shakeTime--;
 		} 
-		// else if (this.hovered && this.playable) {
-		// 	this.shakeTime += 0.6;
-		// 	this.mesh.position.x = this.originalX + Math.sin(this.shakeTime) * 0.03;
-		// 	this.mesh.position.y = this.originalY + Math.cos(this.shakeTime * 1.3) * 0.2;
-		// } else {
-		// 	this.mesh.position.x = this.originalX;
-		// 	this.mesh.position.y = this.originalY;
-		// }
 	}
 
 	setToPlay(cancan) {

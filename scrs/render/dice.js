@@ -59,8 +59,6 @@ export class Dice {
 		this.rolly = null;
 		this.rolling = false;
 		this.locked = false;
-		this.numrolls = 2;
-
 		const geometry = new THREE.BoxGeometry();
 		const materials = [1,2,3,4,5,6].map(n => 
 			new THREE.MeshBasicMaterial({ map: setDiceFaceTexture(n) })
@@ -72,7 +70,6 @@ export class Dice {
 	}
 
 	roll(onDone) {
-		this.numrolls--;
 		if (this.locked) {
 			if (onDone) onDone(this.result);
 			return ;

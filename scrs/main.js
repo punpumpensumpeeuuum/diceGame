@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import { Dice } from '../render/dice.js';
-import { Card } from '../render/card.js';
-import { Player } from '../render/player.js';
-import { Game } from '../server/state.js';
+import { Dice } from './render/dice.js';
+import { Card } from './render/card.js';
+import { Player } from './render/player.js';
+import { Game, manaFromDice } from './server/state.js';
+import { Input } from './input.js';
 
 const scene = new THREE.Scene();
 
@@ -19,18 +20,9 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-const player = new Player(scene)
-
 const game = new Game();
 
-const manaFromDice = {
-	1: "blue",
-	2: "green",
-	3: "darkorange",
-	4: "purple",
-	5: "red",
-	6: "gold"
-};
+const player = new Player(scene)
 
 const diceList = [
 	new Dice(scene, 4, -3, 0),
@@ -47,29 +39,78 @@ const hand = Array.from({ length: handSize }, (_, i) => {
 	return new Card(scene, x, -8, 0);
 });
 
-hand.forEach(card => {
-	card.randomCard();
-});
-diceList.forEach(d => {
-	player.addMana(manaFromDice[d.result]);
-});
+hand.forEach(card => card.randomCard());
+diceList.forEach(d => game.addMana(manaFromDice[d.result]));
 updateCardDisplay();
 
-function resetGame() {
-	player.resetMana();
-	diceList.forEach(d => {
-		d.numrolls = 2;
+const input = new Input(
+	camera, diceList, hand, player, game,
+	() => { updateRollDisplay(); updateCardDisplay(); },
+	() => { updateCardDisplay(); }
+);
+
+const ttt = document.createElement('Turn');
+ttt.innerText = `Turn: ${game.turn}`;
+document.body.appendChild(ttt);
+
+const turnDisplay = document.createElement('Turn');
+turnDisplay.innerText = 'Turn: ${game.turn}';
+document.body.appendChild(turnDisplay);
+
+const nextturnbutton = document.createElement('nextturnbutton');
+nextturnbutton.innerText = 'Next turn';
+nextturnbutton.addEventListener('click', () => {
+	if (diceList.some(d => d.rolling)) return;
+	game.nextturn();
+	diceList.forEach((d, i) => {
 		d.locked = false;
 		d.mesh.material.forEach(m => m.color.set(0xffffff));
-		d.randomizeFace();
-		player.addMana(manaFromDice[d.result]);
+		d.randomFace();
+		game.addMana(manaFromDice[d.result]);
 	});
-	hand.forEach(card => {
-		card.randomCard();
-	});
-	endturn = false;
+	hand.forEach(card => card.randomCard());
 	updateRollDisplay();
 	updateCardDisplay();
+	turnDisplay.innerText = `Turn: ${gameState.turn}`;
+});
+document.body.appendChild(nextturnbutton);
+
+const rollbutton = document.createElement('rollbutton');
+rollbutton.addEventListener('click', () => {
+	if (game.nrolls === 0) return;
+	rollbutton.style.display = 'none';
+	let results = [];
+	diceList.forEach(d => {
+		d.roll((result) => {
+			results.push(result);
+			if (results.length === diceList.length) {
+				game.resetMana();
+				diceList.forEach(d => game.addMana(manaFromDice[d.result]));
+				game.nrolls--;
+				updateRollDisplay();
+				updateCardDisplay();
+				game.printMana();
+			}
+		})
+	});
+});
+document.body.appendChild(rollbutton);
+updateRollDisplay();
+
+function updateCardDisplay() {
+	hand.forEach(c => {
+		const cancan = game.canCastSpell(c.color, c.cost);
+		c.setToPlay(cancan);
+		c.mesh.position.set(c.originalX, c.originalY, 0);
+	});
+}
+
+function updateRollDisplay() {
+	if (game.nrolls === 0) {
+		rollbutton.style.display = 'none';
+		return ;
+	}
+	rollbutton.innerText = `${game.nrolls} Roll`;
 	rollbutton.style.display = 'flex';
 }
 
@@ -80,80 +121,6 @@ function animate() {
 	renderer.render(scene, camera);
 }
 animate();
-
-const ttt = document.createElement('Turn');
-ttt.innerText = `Turn: ${game.turn}`;
-document.body.appendChild(ttt);
-
-function displaynum(number) {
-	ttt.innerText = `Turn: ${number}`;
-}
-
-function updateCardDisplay() {
-	hand.forEach(c => {
-		const cancan = player.canCastSpell(c.color, c.cost);
-		c.setToPlay(cancan);
-		c.mesh.position.set(c.originalX, c.originalY, 0);
-	});
-}
-
-function updateRollDisplay() {
-	const rolls = diceList[0].numrolls;
-	if (rolls === 0) {
-		rollbutton.style.display = 'none';
-		return ;
-	}
-	rollbutton.innerText = `${rolls} Roll`;
-	rollbutton.style.display = 'flex';
-}
-
-const nextturnbutton = document.createElement('nextturnbutton');
-nextturnbutton.innerText = 'Next turn';
-let endturn = false;
-nextturnbutton.addEventListener('click', () => {
-	if (diceList.some(d => d.rolling)) return;
-	game.nextturn();
-	hand.forEach(card => {
-		card.randomCard();
-	});
-	updateRollDisplay();
-	updateCardDisplay();
-	displaynum(game.turn);
-	endturn = false;
-});
-document.body.appendChild(nextturnbutton);
-
-const rollbutton = document.createElement('rollbutton');
-rollbutton.addEventListener('click', () => {
-	if (diceList[0].numrolls === 0) {
-		return ;
-	}
-	player.resetMana();
-	rollbutton.style.display = 'none';
-	endturn = false;
-	let results = [];
-	diceList.forEach(d => {
-		d.roll((result) => {
-			results.push(result);
-			player.addMana(manaFromDice[result]);
-			if (results.length === diceList.length) {
-				updateRollDisplay();
-				updateCardDisplay();
-				player.printMana();
-				endturn = true;
-			}
-		})
-	});
-});
-document.body.appendChild(rollbutton);
-updateRollDisplay();
-
-const deckbutton = document.createElement('deckbutton');
-deckbutton.innerText = 'Deck';
-
-
-
-
 
 // fazer um deck
 // descobrir como fazer as cartas serem random
