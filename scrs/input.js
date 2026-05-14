@@ -54,7 +54,7 @@ export class Input {
 		})
 	}
 
-	MouseMove(event) {
+	mouseMove(event) {
 		const pos = this.globalpos(event);
 		const isdrag = this.hand.some(c => c.dragging);
 		const hoveringzone = this.player.dropCard(pos.x, pos.y);
@@ -79,12 +79,11 @@ export class Input {
 		this.hand.forEach(c => {
 			if (!c.dragging) return;
 			c.dragging = false;
-			const zone = player.dropCard(c.mesh.position.x, c.mesh.position.y);
+			const zone = this.player.dropCard(c.mesh.position.x, c.mesh.position.y);
 			console.log(zone);
 			if (zone && c.playable) {
-				this.gamestate.castSpell(c.color, c.cost);
 				c.castPlay();
-				updateCardDisplay();
+				this.cardplayed();
 			} else {
 				c.mesh.position.x = c.originalX;
 				c.mesh.position.y = c.originalY;

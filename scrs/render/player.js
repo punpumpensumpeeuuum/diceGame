@@ -38,10 +38,6 @@ export class Player {
 		}
 	}
 
-
-
-
-
 	printMana() {
 		console.log(this.mana);
 	}

@@ -93,7 +93,7 @@ export class Dice {
 		}
 	}
 
-	onClick() {
+	clicked() {
 		if (this.rolling) return ;
 		this.locked = !this.locked;
 		this.mesh.material.forEach(m => {

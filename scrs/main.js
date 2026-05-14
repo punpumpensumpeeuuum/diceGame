@@ -54,24 +54,24 @@ ttt.innerText = `Turn: ${game.turn}`;
 document.body.appendChild(ttt);
 
 const turnDisplay = document.createElement('Turn');
-turnDisplay.innerText = 'Turn: ${game.turn}';
+// turnDisplay.innerText = 'Turn: ${game.turn}';
 document.body.appendChild(turnDisplay);
 
 const nextturnbutton = document.createElement('nextturnbutton');
 nextturnbutton.innerText = 'Next turn';
 nextturnbutton.addEventListener('click', () => {
 	if (diceList.some(d => d.rolling)) return;
-	game.nextturn();
+	game.nextTurn();
 	diceList.forEach((d, i) => {
 		d.locked = false;
 		d.mesh.material.forEach(m => m.color.set(0xffffff));
-		d.randomFace();
+		d.randomizeFace();
 		game.addMana(manaFromDice[d.result]);
 	});
 	hand.forEach(card => card.randomCard());
 	updateRollDisplay();
 	updateCardDisplay();
-	turnDisplay.innerText = `Turn: ${gameState.turn}`;
+	turnDisplay.innerText = `Turn: ${game.turn}`;
 });
 document.body.appendChild(nextturnbutton);
 
