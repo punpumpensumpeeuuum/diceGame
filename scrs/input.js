@@ -63,7 +63,7 @@ export class Input {
 		const hoveringzone = this.player.dropCard(pos.x, pos.y);
 
 		Object.entries(this.player.dropZonesGraphic).forEach(([zon,mesh]) => {
-			const validzone = this.cardtarget.includes(zon);
+			const validzone = this.cardtarget?.includes(zon);
 			mesh.visible = isdrag && validzone && zon === hoveringzone;
 			mesh.material.color.set(0x00ff00);
 		});
@@ -85,8 +85,7 @@ export class Input {
 			if (!c.dragging) return;
 			c.dragging = false;
 			const zone = this.player.dropCard(c.mesh.position.x, c.mesh.position.y);
-			const validzone = zone && Targets[c.target].includes(zone);
-			console.log(zone);
+			const validzone = zone && Targets[c.target]?.includes(zone);
 			if (zone && c.playable && validzone) {
 				c.castPlay();
 				this.cardplayed();

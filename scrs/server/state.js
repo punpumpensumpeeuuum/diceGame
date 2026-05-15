@@ -27,7 +27,6 @@ export class Game {
 	nextTurn() {
 		this.turn++;
 		this.resetMana();
-		this.lockedDice = [false, false, false, false, false];
 		this.nrolls = 2
 		this.endturn = false;
 		console.log(`turn > ${this.turn}`);

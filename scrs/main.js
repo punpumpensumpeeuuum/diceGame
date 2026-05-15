@@ -49,12 +49,8 @@ const input = new Input(
 	() => { updateCardDisplay(); }
 );
 
-const ttt = document.createElement('Turn');
-ttt.innerText = `Turn: ${game.turn}`;
-document.body.appendChild(ttt);
-
 const turnDisplay = document.createElement('Turn');
-// turnDisplay.innerText = 'Turn: ${game.turn}';
+turnDisplay.innerText = `Turn: ${game.turn}`;
 document.body.appendChild(turnDisplay);
 
 const nextturnbutton = document.createElement('nextturnbutton');
@@ -62,7 +58,7 @@ nextturnbutton.innerText = 'Next turn';
 nextturnbutton.addEventListener('click', () => {
 	if (diceList.some(d => d.rolling)) return;
 	game.nextTurn();
-	diceList.forEach((d, i) => {
+	diceList.forEach((d) => {
 		d.locked = false;
 		d.mesh.material.forEach(m => m.color.set(0xffffff));
 		d.randomizeFace();
@@ -89,7 +85,6 @@ rollbutton.addEventListener('click', () => {
 				game.nrolls--;
 				updateRollDisplay();
 				updateCardDisplay();
-				game.printMana();
 			}
 		})
 	});
